@@ -1,29 +1,28 @@
-# Start from a base image with Java and Maven
-FROM maven:3.9.6-eclipse-temurin-17 AS build
+# Use Maven with Java 21 to build the project
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 
-# Set working directory
 WORKDIR /app
 
-# Copy everything to the image
+# Copy project files
 COPY . .
 
-# ✅ Add execute permission to mvnw
+# Give execute permission to Maven wrapper (if present)
 RUN chmod +x mvnw
 
-# Build the project
+# Build the application (skip tests to speed up)
 RUN ./mvnw clean package -DskipTests
 
-# Use a smaller runtime image
-FROM eclipse-temurin:17-jdk-alpine
+# -------------------------
+# Run stage: slim JDK to run the built app
+FROM eclipse-temurin:21-jdk-alpine
 
-# Set working directory
 WORKDIR /app
 
-# Copy jar from builder
+# Copy the jar from the build stage
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose port (Render sets this automatically)
+# Expose port 8080 (Spring Boot default)
 EXPOSE 8080
 
-# Start the application using the port from environment
+# Run the app
 ENTRYPOINT ["java", "-jar", "app.jar"]

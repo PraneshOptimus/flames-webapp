@@ -81,7 +81,7 @@
         }
     </style>
 </head>
-<body th:style="'background-image: url(/images/' + ${bgImage} + ');'">
+<body th:style="'background-image: url(/static/images/' + ${bgImage} + ');'">
 <div class="container">
     <h1><i class="fas fa-heart icon"></i> Flames</h1>
     <form action="/result" method="post" th:object="${flamesRequest}">
